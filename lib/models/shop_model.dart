@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 class ShopModel {
   bool? result;
   ShopData? data;
@@ -17,12 +19,17 @@ class ShopModel {
 
   // Factory method to parse JSON and set the singleton instance
   factory ShopModel.fromJson(Map<String, dynamic> json) {
-    _shopModel = ShopModel(
-      result: json['result'],
-      data: json['data'] != null ? ShopData.fromJson(json['data']) : null,
-      message: json['message'],
-      errors: json['errors'] != null ? List<dynamic>.from(json['errors']) : [],
-    );
+    if (json['result'] == true && json['data'] != null) {
+      _shopModel = ShopModel(
+        result: json['result'],
+        data: ShopData.fromJson(json['data']),
+        message: json['message'],
+        errors:
+            json['errors'] != null ? List<dynamic>.from(json['errors']) : [],
+      );
+    } else {
+      log('Invalid response: ${json.toString()}');
+    }
     return _shopModel!;
   }
 
@@ -37,18 +44,25 @@ class ShopModel {
 }
 
 class ShopData {
-  Shop? shop;
+  List<Location>? locations;
+  Shop? shop; // The actual Shop object from the API response.
 
-  ShopData({this.shop});
+  ShopData({this.locations, this.shop});
 
   factory ShopData.fromJson(Map<String, dynamic> json) {
     return ShopData(
+      locations: json['locations'] != null
+          ? (json['locations'] as List)
+              .map((location) => Location.fromJson(location))
+              .toList()
+          : null,
       shop: json['shop'] != null ? Shop.fromJson(json['shop']) : null,
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
+      'locations': locations?.map((location) => location.toJson()).toList(),
       'shop': shop?.toJson(),
     };
   }
@@ -95,7 +109,7 @@ class Shop {
 
   factory Shop.fromJson(Map<String, dynamic> json) {
     return Shop(
-      id: json['id'],
+      id: json['id'] is int ? json['id'] : int.tryParse(json['id'] ?? ''),
       isActive: json['is_active'],
       level: json['level'],
       isPayoffCancelable: json['is_payoff_cancelable'],
@@ -111,8 +125,8 @@ class Shop {
       updatedAt: json['updated_at'],
       deletedAt: json['deleted_at'],
       logoFullUrl: json['logo_full_url'],
-      locations: (json['locations'] as List)
-          .map((locationJson) => Location.fromJson(locationJson))
+      locations: (json['locations'] as List<dynamic>?)
+          ?.map((location) => Location.fromJson(location))
           .toList(),
     );
   }
@@ -146,8 +160,8 @@ class Location {
   String? name;
   String? zipcode;
   String? address;
-  String? latitude;
-  String? longitude;
+  String? latitude; // Ensure these remain as String.
+  String? longitude; // Ensure these remain as String.
   String? createdAt;
   String? updatedAt;
   String? deletedAt;
@@ -167,13 +181,15 @@ class Location {
 
   factory Location.fromJson(Map<String, dynamic> json) {
     return Location(
-      id: json['id'],
-      shopId: json['shop_id'],
+      id: json['id'] is int ? json['id'] : int.tryParse(json['id'] ?? ''),
+      shopId: json['shop_id'] is int
+          ? json['shop_id']
+          : int.tryParse(json['shop_id'] ?? ''),
       name: json['name'],
       zipcode: json['zipcode'],
       address: json['address'],
-      latitude: json['latitude'],
-      longitude: json['longitude'],
+      latitude: json['latitude'], // API returns String, no parsing needed.
+      longitude: json['longitude'], // API returns String, no parsing needed.
       createdAt: json['created_at'],
       updatedAt: json['updated_at'],
       deletedAt: json['deleted_at'],

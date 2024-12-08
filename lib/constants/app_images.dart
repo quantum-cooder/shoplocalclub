@@ -19,7 +19,7 @@ class AppImages {
   static const String locationIcon = 'assets/images/location_image.png';
   static const String globeIcon = 'assets/images/globe.png';
   static const String cafePlaceHolderImg =
-      'assets/images/cafePlaceHolderImg.jpeg';
+      'assets/images/cafe_place_holder.jpeg';
   static const String heartFillIcon = 'assets/images/heartFill.png';
   static const String arrorIndicator = 'assets/images/arror_indicator.png';
   static const String calendarIcon = 'assets/images/calendar_icon.png';

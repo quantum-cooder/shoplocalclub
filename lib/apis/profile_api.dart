@@ -17,7 +17,7 @@ class ProfileApi {
         body: jsonEncode({'api_token': token}),
         headers: ApiEndPoints.apiHeaders,
       );
-      log('getprofileData response : ${response.body}');
+      // log('getprofileData response : ${response.body}');
       if (response.statusCode == ApiEndPoints.successCode) {
         final data = await jsonDecode(response.body);
         if (data['result']) {
