@@ -37,8 +37,8 @@ class ApiEndPoints {
   static const String categories = '$countriesEndPoints/shop_categories';
 
   ///shops end point
-
-  static const String shops = '$baseUrl/api/v1/location/nearby';
+  ///### 4.1 List Shops
+  static const String shops = '$baseUrl/api/v1/shop/';
 
   ///add and remove a shop from favourites: this end point required /{shop} at end
 
