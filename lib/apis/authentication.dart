@@ -262,32 +262,32 @@ class Authentication {
     }
   }
 
-  static Future<bool> checkInLocation(
-      {required String token, required int locationId}) async {
-    final Uri uri = Uri.parse(ApiEndPoints.checkInLocations);
-    bool isCheckedIn = false;
-    try {
-      final http.Response response = await http.post(
-        uri,
-        headers: ApiEndPoints.apiHeaders,
-        body: jsonEncode(
-          {
-            "api_token": token,
-          },
-        ),
-      );
-      log('user  checkInLocation: ${response.body}');
-      if (response.statusCode == ApiEndPoints.successCode) {
-        final data = await jsonDecode(response.body);
-        if (data['result']) {
-          isCheckedIn = true;
-        }
-      }
-      return isCheckedIn;
-    } catch (e) {
-      log('user checkInLocation exception: ${e.toString()}');
-      handleError(error: e);
-      return isCheckedIn;
-    }
-  }
+  // static Future<bool> checkInLocation(
+  //     {required String token, required int locationId}) async {
+  //   final Uri uri = Uri.parse(ApiEndPoints.checkInLocations);
+  //   bool isCheckedIn = false;
+  //   try {
+  //     final http.Response response = await http.post(
+  //       uri,
+  //       headers: ApiEndPoints.apiHeaders,
+  //       body: jsonEncode(
+  //         {
+  //           "api_token": token,
+  //         },
+  //       ),
+  //     );
+  //     log('user checkInLocation: ${response.body}');
+  //     if (response.statusCode == ApiEndPoints.successCode) {
+  //       final data = await jsonDecode(response.body);
+  //       if (data['result']) {
+  //         isCheckedIn = true;
+  //       }
+  //     }
+  //     return isCheckedIn;
+  //   } catch (e) {
+  //     log('user checkInLocation exception: ${e.toString()}');
+  //     handleError(error: e);
+  //     return isCheckedIn;
+  //   }
+  // }
 }

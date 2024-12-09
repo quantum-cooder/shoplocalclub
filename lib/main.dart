@@ -24,12 +24,17 @@ class ShopLocalClub extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      color: AppColors.primary,
-      theme: getTheme(context),
-      onGenerateRoute: onGenerateRoute,
-      home: const SplashScreen(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => ShopProvider()),
+      ],
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        color: AppColors.primary,
+        theme: getTheme(context),
+        onGenerateRoute: onGenerateRoute,
+        home: const SplashScreen(),
+      ),
     );
   }
 

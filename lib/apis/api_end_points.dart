@@ -33,9 +33,11 @@ class ApiEndPoints {
   static const String countriesEndPoints = '$baseUrl/api/v1/ref';
   static const String allCountries = '$countriesEndPoints/countries';
 
-  ///check in & check out
+  ///check in & check out. it needs location id at end
   static const String checkInShopLocation =
       '$baseUrl/api/v1/location/check_in/';
+  static const String checkOutShopLocation =
+      '$baseUrl/api/v1/location/check_out/';
 
   ///categories: Base url is same as of $countriesEndPoints
   static const String categories = '$countriesEndPoints/shop_categories';

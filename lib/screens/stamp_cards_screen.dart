@@ -67,7 +67,7 @@ class _StampCardsScreenState extends State<StampCardsScreen> {
                   ],
                 ),
               ),
-              const ShopCustomWidget(
+              ShopCustomWidget(
                 img: AppImages.girlPlaceHolder,
                 shopName: 'Meta Lab',
                 shopCategory: "",
@@ -77,12 +77,14 @@ class _StampCardsScreenState extends State<StampCardsScreen> {
                 points: '65',
                 aboutShop:
                     'Fredd’s Coffee prides itself in providing locally sourced produce in a friendly atmosphere',
-                vouchers: [],
+                vouchers: const [],
                 isCheckIn: true,
-                stampcardUsers: [],
+                stampcardUsers: const [],
+                onCheckInToggle: () {},
+                onFavoriteToggle: () {},
               ),
               const Gap(20),
-              const ShopCustomWidget(
+              ShopCustomWidget(
                 img: AppImages.cafePlaceHolderImg,
                 shopName: 'Google Advanced Lab',
                 shopCategory: "",
@@ -92,9 +94,11 @@ class _StampCardsScreenState extends State<StampCardsScreen> {
                 points: '60',
                 aboutShop:
                     'Fredd’s Coffee prides itself in providing locally sourced produce in a friendly atmosphere',
-                vouchers: [],
+                vouchers: const [],
                 isCheckIn: true,
-                stampcardUsers: [],
+                stampcardUsers: const [],
+                onCheckInToggle: () {},
+                onFavoriteToggle: () {},
               ),
             ],
           ),

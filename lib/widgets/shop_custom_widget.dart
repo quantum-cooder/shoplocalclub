@@ -7,7 +7,7 @@ import 'package:shoplocalclubcard/models/stamp_card_model.dart';
 import 'package:shoplocalclubcard/utils/open_url.dart';
 import 'package:shoplocalclubcard/widgets/widgets.dart';
 
-class ShopCustomWidget extends StatelessWidget {
+class ShopCustomWidget extends StatefulWidget {
   const ShopCustomWidget({
     super.key,
     required this.img,
@@ -21,11 +21,8 @@ class ShopCustomWidget extends StatelessWidget {
     required this.stampcardUsers,
     required this.isCheckIn,
     required this.shopCategory,
-    // this.hasVocuher = false,
-    // this.voucherPrice,
-    // this.voucherDescription,
-    // this.voucherExpiryDate,
-    // this.voucherID,
+    required this.onFavoriteToggle,
+    required this.onCheckInToggle,
     this.phone = '',
     this.website = '',
   });
@@ -39,18 +36,46 @@ class ShopCustomWidget extends StatelessWidget {
       aboutShop,
       phone,
       website;
-
   final List<Voucher> vouchers;
   final List<StampCardUser>? stampcardUsers;
-  // final String? voucherDescription, voucherPrice, voucherExpiryDate, voucherID;
   final bool isFavorite, isCheckIn;
-  static late Size size;
-  static ValueNotifier<bool> isCheckedIn = ValueNotifier(false);
+  final VoidCallback onFavoriteToggle;
+  final VoidCallback onCheckInToggle;
   static List<int> freeOffers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
+  @override
+  State<ShopCustomWidget> createState() => _ShopCustomWidgetState();
+}
+
+class _ShopCustomWidgetState extends State<ShopCustomWidget> {
+  static late Size size;
+  late bool isFavorite;
+  late bool isCheckIn;
+
+  @override
+  void initState() {
+    super.initState();
+    isFavorite = widget.isFavorite;
+    isCheckIn = widget.isCheckIn;
+  }
+
+  void _toggleFavorite() async {
+    widget.onFavoriteToggle();
+    setState(() {
+      isFavorite = !isFavorite;
+    });
+  }
+
+  void _toggleCheckIn() async {
+    widget.onCheckInToggle();
+    setState(() {
+      isCheckIn = !isCheckIn;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     size = MediaQuery.of(context).size;
-    // log('aboutShop: $address');
     return Container(
       width: size.width,
       decoration: ShapeDecoration(
@@ -77,28 +102,25 @@ class ShopCustomWidget extends StatelessWidget {
             child: Stack(
               children: [
                 CachedNetworkImage(
-                  imageUrl: img,
+                  imageUrl: widget.img,
                   fit: BoxFit.cover,
                   width: double.infinity,
                   height: 150,
                 ),
-                Padding(
-                  padding: EdgeInsets.only(
-                    left: size.width * 0.75,
-                    top: 5,
-                  ),
+                Positioned(
+                  top: 5,
+                  right: 5,
                   child: IconButton.filled(
-                    color: AppColors.primary,
-                    style: const ButtonStyle(
-                      backgroundColor: WidgetStatePropertyAll(
-                        AppColors.white,
-                      ),
-                    ),
-                    onPressed: () {},
+                    onPressed: widget.onFavoriteToggle,
                     icon: Icon(
-                      isFavorite
+                      widget.isFavorite
                           ? Icons.favorite
                           : Icons.favorite_border_outlined,
+                    ),
+                    style: ButtonStyle(
+                      backgroundColor: WidgetStateProperty.all(Colors.white),
+                      foregroundColor:
+                          WidgetStateProperty.all(AppColors.primary),
                     ),
                   ),
                 ),
@@ -118,7 +140,7 @@ class ShopCustomWidget extends StatelessWidget {
               ),
             ),
             child: CustomText(
-              title: '$points points',
+              title: '${widget.points} points',
               textAlign: TextAlign.center,
               color: AppColors.white,
               fontSize: 10,
@@ -128,29 +150,19 @@ class ShopCustomWidget extends StatelessWidget {
           const Gap(20),
           Padding(
               padding: const EdgeInsets.symmetric(horizontal: 19.0),
-              child: customBodyText(shopName)),
+              child: customBodyText(widget.shopName)),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 19.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                CustomText(title: shopCategory),
+                CustomText(title: widget.shopCategory),
                 Row(
                   children: [
                     const CustomText(title: 'Check-in  '),
-                    ValueListenableBuilder<bool>(
-                      valueListenable: isCheckedIn,
-                      builder: (context, value, child) => SizedBox(
-                        height: 30,
-                        child: FittedBox(
-                          child: Switch(
-                            value: isCheckedIn.value,
-                            onChanged: (newValue) {
-                              isCheckedIn.value = newValue;
-                            },
-                          ),
-                        ),
-                      ),
+                    Switch(
+                      value: widget.isCheckIn,
+                      onChanged: (_) => widget.onCheckInToggle(),
                     ),
                   ],
                 )
@@ -167,7 +179,7 @@ class ShopCustomWidget extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 19.0),
             child: CustomText(
-              title: distance,
+              title: widget.distance,
               fontSize: AppFontSize.small,
               color: AppColors.primary,
               fontWeight: FontWeight.w500,
@@ -176,7 +188,7 @@ class ShopCustomWidget extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 19.0),
             child: CustomText(
-              title: address,
+              title: widget.address,
             ),
           ),
           const Gap(10),
@@ -187,7 +199,7 @@ class ShopCustomWidget extends StatelessWidget {
                 CustomFilledBtn(
                   assetImage: AppImages.callImg,
                   onPressed: () async {
-                    await openUrl('tel:$phone');
+                    await openUrl('tel:${widget.phone}');
                   },
                 ),
                 const Gap(15),
@@ -199,7 +211,7 @@ class ShopCustomWidget extends StatelessWidget {
                 CustomFilledBtn(
                   assetImage: AppImages.globeIcon,
                   onPressed: () async {
-                    await openUrl(website);
+                    await openUrl(widget.website);
                   },
                 ),
               ],
@@ -213,24 +225,26 @@ class ShopCustomWidget extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 19.0),
             child: CustomText(
-              title: aboutShop,
+              title: widget.aboutShop,
             ),
           ),
           const Gap(5),
-          if (vouchers.isNotEmpty)
+          if (widget.vouchers.isNotEmpty)
             ListView.builder(
-              itemCount: vouchers.length,
+              itemCount: widget.vouchers.length,
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               itemBuilder: (context, index) => _buildVoucherWidget(
-                voucherDescription: vouchers[index].message ?? '',
-                voucherExpiryDate: vouchers[index].expireDays?.toString() ?? '',
-                voucherID: vouchers[index].id?.toString() ?? '',
-                voucherPrice: vouchers[index].value?.toString() ?? '',
+                voucherDescription: widget.vouchers[index].message ?? '',
+                voucherExpiryDate:
+                    widget.vouchers[index].expireDays?.toString() ?? '',
+                voucherID: widget.vouchers[index].id?.toString() ?? '',
+                voucherPrice: widget.vouchers[index].value?.toString() ?? '',
               ),
             ),
-          if (stampcardUsers!.isNotEmpty)
-            _buidlShopOfferWidget(size: size, stampCardUsers: stampcardUsers),
+          if (widget.stampcardUsers!.isNotEmpty)
+            _buidlShopOfferWidget(
+                size: size, stampCardUsers: widget.stampcardUsers),
         ],
       ),
     );
@@ -306,7 +320,7 @@ class ShopCustomWidget extends StatelessWidget {
                   SizedBox(
                     height: size.height * 0.15,
                     child: GridView.builder(
-                      itemCount: freeOffers.length,
+                      itemCount: ShopCustomWidget.freeOffers.length,
                       gridDelegate:
                           const SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 5,
@@ -318,13 +332,17 @@ class ShopCustomWidget extends StatelessWidget {
                           elevation: 5,
                           color: Colors.transparent,
                           child: CircleAvatar(
-                              backgroundColor: freeOffers.length - 1 == index
-                                  ? AppColors.white
-                                  : AppColors.primary,
-                              child: freeOffers.length - 1 == index
+                              backgroundColor:
+                                  ShopCustomWidget.freeOffers.length - 1 ==
+                                          index
+                                      ? AppColors.white
+                                      : AppColors.primary,
+                              child: ShopCustomWidget.freeOffers.length - 1 ==
+                                      index
                                   ? Image.asset(AppImages.giftIcon)
                                   : CustomText(
-                                      title: '0${freeOffers[index]}',
+                                      title:
+                                          '0${ShopCustomWidget.freeOffers[index]}',
                                       color: AppColors.white,
                                       fontSize: AppFontSize.small,
                                       fontWeight: FontWeight.w400,

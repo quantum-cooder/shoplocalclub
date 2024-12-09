@@ -8,8 +8,8 @@ class FavortiesScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      appBar: CustomAppBar(
+    return Scaffold(
+      appBar: const CustomAppBar(
         title: 'Favourites',
         isLeadingNeeded: false,
         // actionOnPressed: () => Navigator.pushNamed(
@@ -19,7 +19,7 @@ class FavortiesScreen extends StatelessWidget {
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 5),
+          padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 5),
           child: Column(
             children: [
               ShopCustomWidget(
@@ -32,11 +32,13 @@ class FavortiesScreen extends StatelessWidget {
                 points: '99',
                 aboutShop:
                     'Fredd’s Coffee prides itself in providing locally sourced produce in a friendly atmosphere',
-                vouchers: [],
-                stampcardUsers: [],
                 isCheckIn: true,
+                onCheckInToggle: () {},
+                onFavoriteToggle: () {},
+                vouchers: const [],
+                stampcardUsers: const [],
               ),
-              Gap(10),
+              const Gap(10),
               ShopCustomWidget(
                 img: AppImages.girlPlaceHolder,
                 shopName: 'Robitics Advancement',
@@ -47,11 +49,13 @@ class FavortiesScreen extends StatelessWidget {
                 points: '99',
                 aboutShop:
                     'Fredd’s Coffee prides itself in providing locally sourced produce in a friendly atmosphere',
-                vouchers: [],
+                onCheckInToggle: () {},
+                onFavoriteToggle: () {},
+                vouchers: const [],
                 isCheckIn: true,
-                stampcardUsers: [],
+                stampcardUsers: const [],
               ),
-              Gap(20),
+              const Gap(20),
             ],
           ),
         ),

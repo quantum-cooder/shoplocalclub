@@ -58,7 +58,7 @@ class VouchersScreen extends StatelessWidget {
                 ),
               ),
               const Gap(10),
-              const ShopCustomWidget(
+              ShopCustomWidget(
                 img: AppImages.girlPlaceHolder,
                 shopName: 'Shafiq d hutti',
                 shopCategory: "",
@@ -68,12 +68,14 @@ class VouchersScreen extends StatelessWidget {
                 points: '98',
                 aboutShop:
                     'dhugs of outruk pur,dhugs of outruk pur,dhugs of outruk pur,dhugs of outruk pur,dhugs of outruk pur,dhugs of outruk pur,',
-                stampcardUsers: [],
+                stampcardUsers: const [],
                 isCheckIn: true,
-                vouchers: [],
+                vouchers: const [],
+                onCheckInToggle: () {},
+                onFavoriteToggle: () {},
               ),
               const Gap(10),
-              const ShopCustomWidget(
+              ShopCustomWidget(
                 img: AppImages.girlPlaceHolder,
                 shopName: 'Shafiq d hutti',
                 shopCategory: "",
@@ -83,9 +85,11 @@ class VouchersScreen extends StatelessWidget {
                 points: '98',
                 aboutShop:
                     'dhugs of outruk pur,dhugs of outruk pur,dhugs of outruk pur,dhugs of outruk pur,dhugs of outruk pur,dhugs of outruk pur,',
-                stampcardUsers: [],
+                stampcardUsers: const [],
                 isCheckIn: true,
-                vouchers: [],
+                vouchers: const [],
+                onCheckInToggle: () {},
+                onFavoriteToggle: () {},
               )
             ],
           ),

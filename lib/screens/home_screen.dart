@@ -4,11 +4,13 @@ import 'dart:developer';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:provider/provider.dart';
 import 'package:shoplocalclubcard/apis/apis.dart';
 import 'package:shoplocalclubcard/constants/constants.dart';
 import 'package:shoplocalclubcard/models/categories_model.dart' as ca;
 import 'package:shoplocalclubcard/models/models.dart';
 import 'package:shoplocalclubcard/models/shop_model.dart';
+import 'package:shoplocalclubcard/providers/providers.dart';
 import 'package:shoplocalclubcard/utils/utils.dart';
 import 'package:shoplocalclubcard/widgets/widgets.dart';
 
@@ -25,28 +27,26 @@ class HomeScreenState extends State<HomeScreen> {
 
   late Future<void> fetchData;
   List<Location> locations = [];
-  List<bool> checkedInList = [];
-  List<bool> favShopList = [];
   List<ca.Category>? categories;
+  late ShopProvider shopProvider;
+  late String? token;
 
   @override
   void initState() {
     super.initState();
     locations.clear();
-    checkedInList.clear();
-    favShopList.clear();
+    shopProvider = Provider.of<ShopProvider>(context, listen: false);
+
     _searchController = TextEditingController();
     fetchData = _fetchAllData();
   }
 
   Future<void> _fetchAllData() async {
     try {
-      final token = await UserApiToken.getToken();
-      // Fetch user profile
+      token = await UserApiToken.getToken();
       await ProfileApi.getprofileData();
       final userProfile = UserProfileModel.instance;
 
-      // Fetch categories and nearby shops
       await Future.wait([
         CategoriesApi.getAllCategories(),
         ShopApi.getNearByShops(
@@ -60,21 +60,10 @@ class HomeScreenState extends State<HomeScreen> {
 
       if (ShopModel.instance != null && ShopModel.instance!.result!) {
         locations = ShopModel.instance!.data?.locations ?? [];
-
-        for (final location in locations) {
-          final isFavorite = location.isFavorite != null;
-          favShopList.add(isFavorite);
-
-          // Assuming this checks for the current user's check-in status
-          final isCheckedIn = await Authentication.checkInLocation(
-            token: token,
-            locationId: location.id!,
-          );
-          checkedInList.add(isCheckedIn);
-        }
+        shopProvider.setLocations(ShopModel.instance!.data?.locations ?? []);
       }
     } catch (e) {
-      log('Error fetching data: $e');
+      log('Error fetching _fetchAllData : $e');
       handleError(error: e);
     }
   }
@@ -205,31 +194,39 @@ class HomeScreenState extends State<HomeScreen> {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 19.0),
                     child: ListView.builder(
+                      key: const ValueKey(
+                          'locations_list'), // Helps ListView recognize its state
                       itemCount: locations.length,
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
                       itemBuilder: (context, index) {
-                        final location = locations[index];
-                        final shop = location.shop;
-
-                        return Padding(
-                          padding: const EdgeInsets.only(top: 8.0),
-                          child: ShopCustomWidget(
-                            img: shop?.logoFullUrl ?? '',
-                            shopName: shop?.name?.cleanName() ?? '',
-                            shopCategory: shop?.categoryId ?? "",
-                            distance:
-                                '${location.distanceKm?.toStringAsFixed(2)} km',
-                            address: location.address?.cleanName() ?? '',
-                            isFavorite: favShopList[index],
-                            isCheckIn: checkedInList[index],
-                            phone: shop?.phone ?? '',
-                            website: shop?.website ?? '',
-                            points: location.activePoints ?? "0",
-                            aboutShop: shop?.description?.cleanName() ?? '',
-                            vouchers: const [],
-                            stampcardUsers: const [],
-                          ),
+                        return Consumer<ShopProvider>(
+                          builder: (context, provider, child) {
+                            final location = provider.locations[index];
+                            return ShopCustomWidget(
+                              img: location.shop?.logoFullUrl ?? '',
+                              shopName: location.shop?.name?.cleanName() ?? '',
+                              shopCategory: location.shop?.categoryId ?? "",
+                              distance:
+                                  '${location.distanceKm?.toStringAsFixed(2)} km',
+                              address: location.address?.cleanName() ?? '',
+                              isFavorite: location.isFavorite != null,
+                              isCheckIn: location.isCheckedIn!,
+                              points: location.activePoints ?? "0",
+                              aboutShop:
+                                  location.shop?.description?.cleanName() ?? '',
+                              onFavoriteToggle: () async {
+                                await provider.toggleFavorite(
+                                    token: token!, location: location);
+                              },
+                              onCheckInToggle: () async {
+                                await provider.toggleCheckIn(
+                                    token: token!, location: location);
+                              },
+                              vouchers: const [],
+                              stampcardUsers: const [],
+                            );
+                          },
                         );
                       },
                     ),
