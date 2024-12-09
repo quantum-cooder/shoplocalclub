@@ -61,6 +61,7 @@ class VouchersScreen extends StatelessWidget {
               const ShopCustomWidget(
                 img: AppImages.girlPlaceHolder,
                 shopName: 'Shafiq d hutti',
+                shopCategory: "",
                 distance: '97 km',
                 address: 'outerk pur',
                 isFavorite: true,
@@ -75,6 +76,7 @@ class VouchersScreen extends StatelessWidget {
               const ShopCustomWidget(
                 img: AppImages.girlPlaceHolder,
                 shopName: 'Shafiq d hutti',
+                shopCategory: "",
                 distance: '97 km',
                 address: 'outerk pur',
                 isFavorite: true,

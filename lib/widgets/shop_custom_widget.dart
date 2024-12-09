@@ -20,6 +20,7 @@ class ShopCustomWidget extends StatelessWidget {
     required this.vouchers,
     required this.stampcardUsers,
     required this.isCheckIn,
+    required this.shopCategory,
     // this.hasVocuher = false,
     // this.voucherPrice,
     // this.voucherDescription,
@@ -31,12 +32,14 @@ class ShopCustomWidget extends StatelessWidget {
 
   final String img,
       shopName,
+      shopCategory,
       distance,
       address,
       points,
       aboutShop,
       phone,
       website;
+
   final List<Voucher> vouchers;
   final List<StampCardUser>? stampcardUsers;
   // final String? voucherDescription, voucherPrice, voucherExpiryDate, voucherID;
@@ -131,7 +134,7 @@ class ShopCustomWidget extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const CustomText(title: 'Coffee Shop'),
+                CustomText(title: shopCategory),
                 Row(
                   children: [
                     const CustomText(title: 'Check-in  '),

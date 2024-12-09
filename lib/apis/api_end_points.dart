@@ -33,18 +33,27 @@ class ApiEndPoints {
   static const String countriesEndPoints = '$baseUrl/api/v1/ref';
   static const String allCountries = '$countriesEndPoints/countries';
 
+  ///check in & check out
+  static const String checkInShopLocation =
+      '$baseUrl/api/v1/location/check_in/';
+
   ///categories: Base url is same as of $countriesEndPoints
   static const String categories = '$countriesEndPoints/shop_categories';
 
   ///shops end point
-  ///### 4.1 List Shops
+  ///### 4.1 List Shops of users that they own
   static const String shops = '$baseUrl/api/v1/shop/';
 
-  ///add and remove a shop from favourites: this end point required /{shop} at end
+  ///shops nearby you
+  static const String nearByShops = '$baseUrl/api/v1/location/nearby';
+
+  ///add and remove a shop from favourites: this end point requires /{shop} or shop id at end
 
   static const String addShopToFavourite = '$baseUrl/api/v1/favorite/store/';
+
+  ///shop id at end only
   static const String removeShopToFavourite =
-      '$baseUrl/api/v1/favorite/destroy/';
+      '$baseUrl/api/v1/favorite/unlike/';
 
   ///vouchers: this end point needs shop id
   static const String vouchers = '$baseUrl/api/v1/voucher/list/';

@@ -6,7 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:shoplocalclubcard/apis/apis.dart';
 import 'package:shoplocalclubcard/constants/constants.dart';
+import 'package:shoplocalclubcard/models/categories_model.dart' as ca;
 import 'package:shoplocalclubcard/models/models.dart';
+import 'package:shoplocalclubcard/models/shop_model.dart';
 import 'package:shoplocalclubcard/utils/utils.dart';
 import 'package:shoplocalclubcard/widgets/widgets.dart';
 
@@ -22,20 +24,15 @@ class HomeScreenState extends State<HomeScreen> {
   static late Size size;
 
   late Future<void> fetchData;
-  Shop? shop;
-  List<Shop> shops = [];
-  bool isCheckedIn = false;
+  List<Location> locations = [];
   List<bool> checkedInList = [];
-  bool isFavShop = false;
   List<bool> favShopList = [];
-  List<Category>? categories;
-  List<Voucher>? vouchers;
+  List<ca.Category>? categories;
 
   @override
   void initState() {
     super.initState();
-    // Authentication.logout(context);
-    shops.clear();
+    locations.clear();
     checkedInList.clear();
     favShopList.clear();
     _searchController = TextEditingController();
@@ -45,25 +42,33 @@ class HomeScreenState extends State<HomeScreen> {
   Future<void> _fetchAllData() async {
     try {
       final token = await UserApiToken.getToken();
+      // Fetch user profile
+      await ProfileApi.getprofileData();
+      final userProfile = UserProfileModel.instance;
+
+      // Fetch categories and nearby shops
       await Future.wait([
         CategoriesApi.getAllCategories(),
-        ShopApi.getShops(token: token!),
+        ShopApi.getNearByShops(
+          token: token!,
+          latitude: userProfile.latitude!,
+          longitude: userProfile.longitude!,
+        ),
       ]);
 
       categories = CategoriesModel.instance?.data?.categories;
 
       if (ShopModel.instance != null && ShopModel.instance!.result!) {
-        shop = ShopModel.instance?.data?.shop;
+        locations = ShopModel.instance!.data?.locations ?? [];
 
-        if (shop != null) {
-          shops.add(shop!);
-          isFavShop = await AddRemoveShopFromFav.addShopToFav(
+        for (final location in locations) {
+          final isFavorite = location.isFavorite != null;
+          favShopList.add(isFavorite);
+
+          // Assuming this checks for the current user's check-in status
+          final isCheckedIn = await Authentication.checkInLocation(
             token: token,
-            shopId: shop!.id!,
-          );
-          favShopList.add(isFavShop);
-          isCheckedIn = await Authentication.checkInLocation(
-            token: token,
+            locationId: location.id!,
           );
           checkedInList.add(isCheckedIn);
         }
@@ -196,39 +201,40 @@ class HomeScreenState extends State<HomeScreen> {
                   child: customBodyText('All Shops'),
                 ),
                 const Gap(10),
-                if (shops.isNotEmpty)
+                if (locations.isNotEmpty)
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 19.0),
                     child: ListView.builder(
-                      itemCount: shops.length,
+                      itemCount: locations.length,
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
-                      itemBuilder: (context, index) => ShopCustomWidget(
-                        img: shop!.logoFullUrl ?? '',
-                        shopName: shop!.name ?? '',
-                        distance: shop!.description
-                                ?.replaceAll('<p>', '')
-                                .replaceAll('</p>', '') ??
-                            '',
-                        address: shop!.description
-                                ?.replaceAll('<p>', '')
-                                .replaceAll('</p>', '') ??
-                            '',
-                        isFavorite: favShopList[index],
-                        isCheckIn: checkedInList[index],
-                        phone: shop!.phone ?? '',
-                        website: shop!.website ?? '',
-                        points: vouchers?.first.minPoints?.toString() ?? '0',
-                        aboutShop: shop!.description
-                                ?.replaceAll('<p>', '')
-                                .replaceAll('</p>', '') ??
-                            '',
-                        vouchers: vouchers ?? [],
-                        stampcardUsers: const [],
-                      ),
+                      itemBuilder: (context, index) {
+                        final location = locations[index];
+                        final shop = location.shop;
+
+                        return Padding(
+                          padding: const EdgeInsets.only(top: 8.0),
+                          child: ShopCustomWidget(
+                            img: shop?.logoFullUrl ?? '',
+                            shopName: shop?.name?.cleanName() ?? '',
+                            shopCategory: shop?.categoryId ?? "",
+                            distance:
+                                '${location.distanceKm?.toStringAsFixed(2)} km',
+                            address: location.address?.cleanName() ?? '',
+                            isFavorite: favShopList[index],
+                            isCheckIn: checkedInList[index],
+                            phone: shop?.phone ?? '',
+                            website: shop?.website ?? '',
+                            points: location.activePoints ?? "0",
+                            aboutShop: shop?.description?.cleanName() ?? '',
+                            vouchers: const [],
+                            stampcardUsers: const [],
+                          ),
+                        );
+                      },
                     ),
                   ),
-                if (shops.isEmpty)
+                if (locations.isEmpty)
                   const Center(
                     child: CustomText(title: 'No shop found'),
                   ),

@@ -25,6 +25,7 @@ class FavortiesScreen extends StatelessWidget {
               ShopCustomWidget(
                 img: AppImages.girlPlaceHolder,
                 shopName: 'Robitics Advancement',
+                shopCategory: "",
                 distance: '67Km',
                 address: 'Street 1, Model town A, Bahawalpur, Punjab, Pakistan',
                 isFavorite: true,
@@ -39,6 +40,7 @@ class FavortiesScreen extends StatelessWidget {
               ShopCustomWidget(
                 img: AppImages.girlPlaceHolder,
                 shopName: 'Robitics Advancement',
+                shopCategory: "",
                 distance: '67Km',
                 address: 'Street 1, Model town A, Bahawalpur, Punjab, Pakistan',
                 isFavorite: true,

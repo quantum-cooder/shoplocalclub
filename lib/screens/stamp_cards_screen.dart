@@ -70,6 +70,7 @@ class _StampCardsScreenState extends State<StampCardsScreen> {
               const ShopCustomWidget(
                 img: AppImages.girlPlaceHolder,
                 shopName: 'Meta Lab',
+                shopCategory: "",
                 distance: '75Km from east',
                 address: 'California, United States',
                 isFavorite: true,
@@ -84,6 +85,7 @@ class _StampCardsScreenState extends State<StampCardsScreen> {
               const ShopCustomWidget(
                 img: AppImages.cafePlaceHolderImg,
                 shopName: 'Google Advanced Lab',
+                shopCategory: "",
                 distance: '90KM from south',
                 address: 'California, United States',
                 isFavorite: true,

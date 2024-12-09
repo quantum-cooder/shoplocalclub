@@ -1,6 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 import 'dart:convert';
 import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -261,7 +262,8 @@ class Authentication {
     }
   }
 
-  static Future<bool> checkInLocation({required String token}) async {
+  static Future<bool> checkInLocation(
+      {required String token, required int locationId}) async {
     final Uri uri = Uri.parse(ApiEndPoints.checkInLocations);
     bool isCheckedIn = false;
     try {
