@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:shoplocalclubcard/constants/constants.dart';
 
 class CustomText extends StatelessWidget {
@@ -27,19 +28,41 @@ class CustomText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(
-      title,
-      textAlign: textAlign,
-      style: TextStyle(
-        fontSize: fontSize,
-        color: color,
-        fontWeight: fontWeight,
-        decoration: textDecoration,
-        fontStyle: fontStyle,
-        decorationColor: decorationColor,
-        letterSpacing: letterSpacing,
-        wordSpacing: wordSpacing,
-      ),
+    // Check if the input string contains HTML tags
+    bool containsHtml = RegExp(r"<[^>]+>").hasMatch(title);
+
+    // Shared text style
+    final textStyle = TextStyle(
+      fontSize: fontSize,
+      color: color,
+      fontWeight: fontWeight,
+      decoration: textDecoration,
+      fontStyle: fontStyle,
+      decorationColor: decorationColor,
+      letterSpacing: letterSpacing,
+      wordSpacing: wordSpacing,
     );
+
+    return containsHtml
+        ? Html(
+            data: title,
+            style: {
+              "p": Style(
+                margin: Margins.zero,
+                color: AppColors.grey,
+                fontStyle: FontStyle.normal,
+              ),
+              "li": Style(
+                margin: Margins.symmetric(vertical: 4.0),
+                color: AppColors.grey,
+                fontStyle: FontStyle.normal,
+              ),
+            },
+          )
+        : Text(
+            title,
+            textAlign: textAlign,
+            style: textStyle,
+          );
   }
 }

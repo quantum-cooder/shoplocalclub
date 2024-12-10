@@ -1,18 +1,16 @@
-extension StringCleaner on String {
-  String cleanName({List<String>? removeTags}) {
-    // Default tags to remove
-    List<String> tags =
-        removeTags ?? ['<p>', '</p>', '<b>', '</b>', '<br/>', '<br>'];
+import 'package:intl/intl.dart';
 
-    String result = this;
-    for (var tag in tags) {
-      result = result.replaceAll(tag, '');
+extension DateFormatting on String {
+  String toCustomDateFormat() {
+    try {
+      // Parse the string to a DateTime object
+      final dateTime = DateTime.parse(this);
+
+      // Format the DateTime object to the desired format
+      return DateFormat('dd/MM/yyyy').format(dateTime);
+    } catch (e) {
+      // Handle parsing error
+      return "Invalid Date";
     }
-
-    // Remove any other remaining HTML tags using a regex
-    // result = result.replaceAll(
-    //     RegExp(r'<[^>]*>'), '');
-
-    return result.trim();
   }
 }

@@ -1,10 +1,11 @@
+import 'dart:developer';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:shoplocalclubcard/constants/constants.dart';
-import 'package:shoplocalclubcard/models/models.dart';
 import 'package:shoplocalclubcard/models/stamp_card_model.dart';
-import 'package:shoplocalclubcard/utils/open_url.dart';
+import 'package:shoplocalclubcard/utils/utils.dart';
 import 'package:shoplocalclubcard/widgets/widgets.dart';
 
 class ShopCustomWidget extends StatefulWidget {
@@ -15,33 +16,33 @@ class ShopCustomWidget extends StatefulWidget {
     required this.distance,
     required this.address,
     required this.isFavorite,
-    required this.points,
+    this.points = "0",
+    required this.activePoints,
     required this.aboutShop,
-    required this.vouchers,
-    required this.stampcardUsers,
     required this.isCheckIn,
     required this.shopCategory,
     required this.onFavoriteToggle,
     required this.onCheckInToggle,
+    required this.stampcardUsers,
     this.phone = '',
     this.website = '',
   });
 
+  ///active points are for shop and points are for shop's voucher
   final String img,
       shopName,
       shopCategory,
       distance,
       address,
+      activePoints,
       points,
       aboutShop,
       phone,
       website;
-  final List<Voucher> vouchers;
-  final List<StampCardUser>? stampcardUsers;
+  final List<StampCardUser> stampcardUsers;
   final bool isFavorite, isCheckIn;
   final VoidCallback onFavoriteToggle;
   final VoidCallback onCheckInToggle;
-  static List<int> freeOffers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
   @override
   State<ShopCustomWidget> createState() => _ShopCustomWidgetState();
@@ -59,24 +60,11 @@ class _ShopCustomWidgetState extends State<ShopCustomWidget> {
     isCheckIn = widget.isCheckIn;
   }
 
-  void _toggleFavorite() async {
-    widget.onFavoriteToggle();
-    setState(() {
-      isFavorite = !isFavorite;
-    });
-  }
-
-  void _toggleCheckIn() async {
-    widget.onCheckInToggle();
-    setState(() {
-      isCheckIn = !isCheckIn;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     size = MediaQuery.of(context).size;
     return Container(
+      margin: const EdgeInsets.only(top: 15),
       width: size.width,
       decoration: ShapeDecoration(
         color: AppColors.white,
@@ -103,7 +91,7 @@ class _ShopCustomWidgetState extends State<ShopCustomWidget> {
               children: [
                 CachedNetworkImage(
                   imageUrl: widget.img,
-                  fit: BoxFit.cover,
+                  fit: BoxFit.fill,
                   width: double.infinity,
                   height: 150,
                 ),
@@ -140,7 +128,7 @@ class _ShopCustomWidgetState extends State<ShopCustomWidget> {
               ),
             ),
             child: CustomText(
-              title: '${widget.points} points',
+              title: '${widget.activePoints} points',
               textAlign: TextAlign.center,
               color: AppColors.white,
               fontSize: 10,
@@ -179,7 +167,7 @@ class _ShopCustomWidgetState extends State<ShopCustomWidget> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 19.0),
             child: CustomText(
-              title: widget.distance,
+              title: "${widget.distance} km away from you",
               fontSize: AppFontSize.small,
               color: AppColors.primary,
               fontWeight: FontWeight.w500,
@@ -229,214 +217,196 @@ class _ShopCustomWidgetState extends State<ShopCustomWidget> {
             ),
           ),
           const Gap(5),
-          if (widget.vouchers.isNotEmpty)
+          if (widget.stampcardUsers.isNotEmpty)
             ListView.builder(
-              itemCount: widget.vouchers.length,
+              itemCount: widget.stampcardUsers.length,
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
-              itemBuilder: (context, index) => _buildVoucherWidget(
-                voucherDescription: widget.vouchers[index].message ?? '',
-                voucherExpiryDate:
-                    widget.vouchers[index].expireDays?.toString() ?? '',
-                voucherID: widget.vouchers[index].id?.toString() ?? '',
-                voucherPrice: widget.vouchers[index].value?.toString() ?? '',
-              ),
+              itemBuilder: (context, index) {
+                final voucher = widget.stampcardUsers[index];
+                return _buildVoucherWidget(
+                  voucherDescription: voucher.description ?? '',
+                  voucherExpiryDate:
+                      voucher.expiresAt?.toCustomDateFormat() ?? '' '',
+                  voucherID: voucher.id?.toString() ?? '',
+                  voucherPrice: voucher.points?.toString() ?? '',
+                );
+              },
             ),
-          if (widget.stampcardUsers!.isNotEmpty)
-            _buidlShopOfferWidget(
-                size: size, stampCardUsers: widget.stampcardUsers),
+          _buidlShopOfferWidget(
+            size: MediaQuery.of(context).size,
+            stampCardUsers: widget.stampcardUsers,
+          ),
         ],
       ),
     );
   }
+
+  ///this data comes from "stampcard" value in data -->"stampcardUsers" --> in its index
 
   _buidlShopOfferWidget({
     required Size size,
     required List<StampCardUser>? stampCardUsers,
   }) {
     return ListView.builder(
-        itemCount: stampCardUsers!.length,
-        itemBuilder: (context, index) => Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 19.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+      itemCount: widget.stampcardUsers.length,
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemBuilder: (context, listIndex) {
+        final stampCard = stampCardUsers![listIndex].stampcard;
+        log("Total length: ${widget.stampcardUsers[listIndex].stampsTotal}");
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 19.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Gap(10),
+              Divider(
+                color: AppColors.grey.withOpacity(0.3),
+              ),
+              const Gap(5),
+              const CustomText(
+                title: "Shop Offer",
+                fontSize: AppFontSize.medium,
+                fontWeight: FontWeight.w700,
+                color: AppColors.primary,
+              ),
+              CustomText(
+                title: stampCard?.description ?? '',
+                fontSize: AppFontSize.medium,
+                fontWeight: FontWeight.w700,
+                color: AppColors.primary,
+              ),
+              const Gap(5),
+              SizedBox(
+                height: size.height * 0.15,
+                child: GridView.builder(
+                  itemCount: widget.stampcardUsers[listIndex].stampsTotal,
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 5,
+                    crossAxisSpacing: 5,
+                  ),
+                  itemBuilder: (context, gridIndex) {
+                    final stampsTotal =
+                        widget.stampcardUsers[listIndex].stampsTotal ?? 0;
+                    if (gridIndex >= stampsTotal) {
+                      return const SizedBox
+                          .shrink(); // Prevent out-of-range error
+                    }
+
+                    return Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Card(
+                        elevation: 5,
+                        color: Colors.transparent,
+                        child: CircleAvatar(
+                          backgroundColor: stampsTotal - 1 == gridIndex
+                              ? AppColors.white
+                              : AppColors.primary,
+                          child: stampsTotal - 1 == gridIndex
+                              ? Image.asset(AppImages.giftIcon)
+                              : CustomText(
+                                  title: "${gridIndex + 1}",
+                                  color: AppColors.white,
+                                  fontSize: AppFontSize.small,
+                                  fontWeight: FontWeight.w400,
+                                ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+              const Gap(10),
+              Divider(
+                color: AppColors.grey.withOpacity(0.3),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Gap(10),
-                  Divider(
-                    color: AppColors.grey.withOpacity(0.3),
-                  ),
-                  const Gap(5),
-                  CustomText(
-                    title: stampCardUsers[index].description!,
-                    fontSize: AppFontSize.medium,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.primary,
-                  ),
-                  const Gap(5),
-                  SizedBox(
-                    width: size.width,
-                    height: size.height * 0.1,
-                    child: ListView.builder(
-                      itemCount: 3,
-                      scrollDirection: Axis.horizontal,
-                      shrinkWrap: true,
-                      itemBuilder: (context, index) => Padding(
-                        padding: const EdgeInsets.only(left: 8.0),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(5),
-                          child: Image.asset(
-                            AppImages.cafePlaceHolderImg,
-                            fit: BoxFit.cover,
-                            width: size.width * 0.23,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  const Gap(12),
-                  const Text.rich(
-                    TextSpan(
-                      children: [
-                        TextSpan(
-                          text: 'Buy 9 Coffee and get the 10th ',
-                          style: TextStyle(
-                            color: Color(0xFF0C0C0C),
-                            fontSize: AppFontSize.xsmall,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        TextSpan(
-                          text: 'FREE',
-                          style: TextStyle(
-                            color: AppColors.primary,
-                            fontSize: AppFontSize.small,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const Gap(10),
-                  SizedBox(
-                    height: size.height * 0.15,
-                    child: GridView.builder(
-                      itemCount: ShopCustomWidget.freeOffers.length,
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 5,
-                        crossAxisSpacing: 5,
-                      ),
-                      itemBuilder: (context, index) => Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Card(
-                          elevation: 5,
-                          color: Colors.transparent,
-                          child: CircleAvatar(
-                              backgroundColor:
-                                  ShopCustomWidget.freeOffers.length - 1 ==
-                                          index
-                                      ? AppColors.white
-                                      : AppColors.primary,
-                              child: ShopCustomWidget.freeOffers.length - 1 ==
-                                      index
-                                  ? Image.asset(AppImages.giftIcon)
-                                  : CustomText(
-                                      title:
-                                          '0${ShopCustomWidget.freeOffers[index]}',
-                                      color: AppColors.white,
-                                      fontSize: AppFontSize.small,
-                                      fontWeight: FontWeight.w400,
-                                    )),
-                        ),
-                      ),
-                    ),
-                  ),
-                  const Gap(10),
-                  Divider(
-                    color: AppColors.grey.withOpacity(0.3),
-                  ),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Row(
-                        children: [
-                          CustomFilledBtn(
-                            width: 23,
-                            height: 23,
-                            childHeight: 18,
-                            childWidth: 18,
-                            btnBackgroundColor: AppColors.primary,
-                            assetImage: AppImages.calendarIcon,
-                            onPressed: () {},
-                          ),
-                          const Gap(5),
-                          const Text.rich(
-                            TextSpan(
-                              children: [
-                                TextSpan(
-                                  text: 'Expires: ',
-                                  style: TextStyle(
-                                    color: AppColors.primary,
-                                    fontSize: AppFontSize.xxsmall,
-                                    fontWeight: FontWeight.w400,
-                                  ),
-                                ),
-                                TextSpan(
-                                  text: '25/07/24',
-                                  style: TextStyle(
-                                    color: AppColors.grey,
-                                    fontSize: AppFontSize.xxsmall,
-                                    fontWeight: FontWeight.w400,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
+                      CustomFilledBtn(
+                        width: 23,
+                        height: 23,
+                        childHeight: 18,
+                        childWidth: 18,
+                        btnBackgroundColor: AppColors.primary,
+                        assetImage: AppImages.calendarIcon,
+                        onPressed: () {},
                       ),
-                      Row(
-                        children: [
-                          CustomFilledBtn(
-                            width: 23,
-                            height: 23,
-                            childHeight: 18,
-                            childWidth: 18,
-                            btnBackgroundColor: AppColors.primary,
-                            assetImage: AppImages.idIcon,
-                            onPressed: () {},
-                          ),
-                          const Gap(5),
-                          const Text.rich(
-                            TextSpan(
-                              children: [
-                                TextSpan(
-                                  text: 'ID: ',
-                                  style: TextStyle(
-                                    color: AppColors.primary,
-                                    fontSize: AppFontSize.xxsmall,
-                                    fontWeight: FontWeight.w400,
-                                  ),
-                                ),
-                                TextSpan(
-                                  text: '1223',
-                                  style: TextStyle(
-                                    color: AppColors.grey,
-                                    fontSize: AppFontSize.xxsmall,
-                                    fontWeight: FontWeight.w400,
-                                  ),
-                                ),
-                              ],
+                      const Gap(5),
+                      Text.rich(
+                        TextSpan(
+                          children: [
+                            const TextSpan(
+                              text: 'Expires: ',
+                              style: TextStyle(
+                                color: AppColors.primary,
+                                fontSize: AppFontSize.xxsmall,
+                                fontWeight: FontWeight.w400,
+                              ),
                             ),
-                          ),
-                        ],
+                            TextSpan(
+                              text: "${stampCard?.expireDays} days",
+                              style: const TextStyle(
+                                color: AppColors.grey,
+                                fontSize: AppFontSize.xxsmall,
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                   ),
-                  const Gap(10),
+                  Row(
+                    children: [
+                      CustomFilledBtn(
+                        width: 23,
+                        height: 23,
+                        childHeight: 18,
+                        childWidth: 18,
+                        btnBackgroundColor: AppColors.primary,
+                        assetImage: AppImages.idIcon,
+                        onPressed: () {},
+                      ),
+                      const Gap(5),
+                      Text.rich(
+                        TextSpan(
+                          children: [
+                            const TextSpan(
+                              text: 'ID: ',
+                              style: TextStyle(
+                                color: AppColors.primary,
+                                fontSize: AppFontSize.xxsmall,
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                            TextSpan(
+                              text: stampCard?.id.toString() ?? "",
+                              style: const TextStyle(
+                                color: AppColors.grey,
+                                fontSize: AppFontSize.xxsmall,
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 ],
               ),
-            ));
+              const Gap(10),
+            ],
+          ),
+        );
+      },
+    );
   }
+
+  ///this data comes from"stampcardUsers"'s list --> in its index
 
   Column _buildVoucherWidget({
     required String voucherDescription,

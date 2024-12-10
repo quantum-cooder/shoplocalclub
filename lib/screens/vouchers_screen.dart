@@ -66,11 +66,11 @@ class VouchersScreen extends StatelessWidget {
                 address: 'outerk pur',
                 isFavorite: true,
                 points: '98',
+                activePoints: "08",
                 aboutShop:
                     'dhugs of outruk pur,dhugs of outruk pur,dhugs of outruk pur,dhugs of outruk pur,dhugs of outruk pur,dhugs of outruk pur,',
                 stampcardUsers: const [],
                 isCheckIn: true,
-                vouchers: const [],
                 onCheckInToggle: () {},
                 onFavoriteToggle: () {},
               ),
@@ -82,12 +82,12 @@ class VouchersScreen extends StatelessWidget {
                 distance: '97 km',
                 address: 'outerk pur',
                 isFavorite: true,
+                activePoints: "08",
                 points: '98',
                 aboutShop:
                     'dhugs of outruk pur,dhugs of outruk pur,dhugs of outruk pur,dhugs of outruk pur,dhugs of outruk pur,dhugs of outruk pur,',
                 stampcardUsers: const [],
                 isCheckIn: true,
-                vouchers: const [],
                 onCheckInToggle: () {},
                 onFavoriteToggle: () {},
               )

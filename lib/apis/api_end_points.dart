@@ -61,7 +61,10 @@ class ApiEndPoints {
   static const String vouchers = '$baseUrl/api/v1/voucher/list/';
 
   ///stamp card apis end point:
-  static const String stampCard = '$baseUrl/api/v1/stampcard';
+  // all stamp cards for logged in users
+  static const String userStampCards = '$baseUrl/api/v1/stampcard';
+  static const String userStampCardsArchived =
+      '$baseUrl/api/v1/stampcard/archive';
 }
 
 ///https://shoplocalclubcard.com/terms-conditions/

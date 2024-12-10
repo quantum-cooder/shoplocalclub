@@ -13,7 +13,6 @@ class ShopApi {
     required String longitude,
   }) async {
     final url = Uri.parse(ApiEndPoints.nearByShops);
-
     try {
       final http.Response response = await http.post(
         url,
@@ -22,6 +21,7 @@ class ShopApi {
           "api_token": token,
           "latitude": latitude,
           "longitude": longitude,
+          "limit": 50,
         }),
       );
       // log('getShop response : ${response.body}');

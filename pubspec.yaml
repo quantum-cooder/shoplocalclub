@@ -50,6 +50,8 @@ dependencies:
   geocoding: ^3.0.0
   image_picker: ^1.1.2
   cached_network_image: ^3.4.1
+  flutter_html: ^3.0.0-beta.2
+  intl: ^0.20.1
 
 dev_dependencies:
   flutter_test:

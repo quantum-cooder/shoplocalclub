@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:developer';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
@@ -98,7 +97,7 @@ class HomeScreenState extends State<HomeScreen> {
         future: fetchData,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CupertinoActivityIndicator());
+            return const Center(child: CircularProgressIndicator.adaptive());
           } else if (snapshot.hasError) {
             return const Center(
               child: CustomText(title: 'Error fetching data, please try again'),
@@ -205,16 +204,18 @@ class HomeScreenState extends State<HomeScreen> {
                             final location = provider.locations[index];
                             return ShopCustomWidget(
                               img: location.shop?.logoFullUrl ?? '',
-                              shopName: location.shop?.name?.cleanName() ?? '',
+                              shopName: location.shop?.name ?? '',
                               shopCategory: location.shop?.categoryId ?? "",
                               distance:
-                                  '${location.distanceKm?.toStringAsFixed(2)} km',
-                              address: location.address?.cleanName() ?? '',
+                                  location.distanceKm?.toStringAsFixed(2) ?? '',
+                              address: location.address ?? '',
                               isFavorite: location.isFavorite != null,
                               isCheckIn: location.isCheckedIn!,
-                              points: location.activePoints ?? "0",
-                              aboutShop:
-                                  location.shop?.description?.cleanName() ?? '',
+                              activePoints:
+                                  location.activePoints?.toString() ?? "0",
+                              aboutShop: location.shop?.description ?? '',
+                              phone: location.shop?.phone ?? "",
+                              website: location.shop?.website ?? "",
                               onFavoriteToggle: () async {
                                 await provider.toggleFavorite(
                                     token: token!, location: location);
@@ -223,7 +224,6 @@ class HomeScreenState extends State<HomeScreen> {
                                 await provider.toggleCheckIn(
                                     token: token!, location: location);
                               },
-                              vouchers: const [],
                               stampcardUsers: const [],
                             );
                           },
