@@ -2,15 +2,17 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:shoplocalclubcard/apis/apis.dart';
-import 'package:shoplocalclubcard/models/stamp_card_model.dart';
+import 'package:shoplocalclubcard/models/models.dart';
 
-class StampCardProvider with ChangeNotifier {
-  List<StampCardUser> _stampCards = [];
+class VoucherProvider with ChangeNotifier {
+  List<MembershipCardVoucher> _memberShipCardVouchers = [];
 
-  List<StampCardUser> get stampCards => _stampCards;
+  List<MembershipCardVoucher> get memberShipCardVouchers =>
+      _memberShipCardVouchers;
 
-  void setStampCards(List<StampCardUser> cards) {
-    _stampCards = cards;
+  void setMemberShipCardVouchers(
+      List<MembershipCardVoucher> memberShipCardVouchers) {
+    _memberShipCardVouchers = memberShipCardVouchers;
     notifyListeners();
   }
 
@@ -18,6 +20,7 @@ class StampCardProvider with ChangeNotifier {
     required String token,
     required int locationId,
     required bool isCheckIn,
+    required String memberShipVoucherCode,
   }) async {
     log("before toggleCheckIn: value for locationId $locationId = $isCheckIn");
 
@@ -34,11 +37,13 @@ class StampCardProvider with ChangeNotifier {
     }
 
     // Update the local state
-    final index = _stampCards.indexWhere(
-      (card) => card.shop?.closestLocation?.id == locationId,
+    final index = _memberShipCardVouchers.indexWhere(
+      (memberShipCardVoucher) =>
+          memberShipCardVoucher.code == memberShipVoucherCode,
     );
     if (index != -1) {
-      _stampCards[index].shop?.closestLocation?.isCheckedIn = !isCheckIn;
+      _memberShipCardVouchers[index].shop?.closestLocation?.isCheckedIn =
+          !isCheckIn;
       notifyListeners();
     }
   }
@@ -48,6 +53,7 @@ class StampCardProvider with ChangeNotifier {
     required int shopId,
     required int locationId,
     required bool isFavorite,
+    required String memberShipVoucherCode,
   }) async {
     log("before toggleFavorite: value for $locationId and $shopId = $isFavorite");
 
@@ -65,11 +71,12 @@ class StampCardProvider with ChangeNotifier {
     }
 
     // Update the local state
-    final index = _stampCards.indexWhere(
-      (card) => card.shop?.id == shopId,
+    final index = _memberShipCardVouchers.indexWhere(
+      (memberShipCardVoucher) =>
+          memberShipCardVoucher.code == memberShipVoucherCode,
     );
     if (index != -1) {
-      _stampCards[index].shop?.isFavorite = !isFavorite;
+      _memberShipCardVouchers[index].isFavorite = !isFavorite;
       notifyListeners();
     }
   }

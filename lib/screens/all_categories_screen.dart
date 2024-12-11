@@ -24,10 +24,10 @@ class AllCategoriesScreen extends StatelessWidget {
         itemCount: CategoriesModel.instance?.data?.categories?.length ?? 0,
         padding: const EdgeInsets.all(19),
         itemBuilder: (context, index) => InkWell(
-          onTap: () => Navigator.pushNamed(
-            context,
-            AppRoutes.stampCards,
-          ),
+          // onTap: () => Navigator.pushNamed(
+          //   context,
+          //   AppRoutes.stampCards,
+          // ),
           child: CustomContainer(
             avatarBgColor: AppColors.grey,
             imageAsset: AppImages.allCategoriesImages[index],

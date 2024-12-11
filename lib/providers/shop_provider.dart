@@ -44,8 +44,8 @@ class ShopProvider with ChangeNotifier {
           locationId: location.id!,
         );
         location.isFavorite = IsFavorite(
-          id: DateTime.now().millisecondsSinceEpoch, // Dummy ID
-          userId: 1, // Replace with actual user ID if available
+          id: DateTime.now().millisecondsSinceEpoch,
+          userId: 1,
           shopId: location.shopId,
           locationId: location.id,
           createdAt: DateTime.now().toString(),

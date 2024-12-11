@@ -57,8 +57,9 @@ class ApiEndPoints {
   static const String removeShopToFavourite =
       '$baseUrl/api/v1/favorite/unlike/';
 
-  ///vouchers: this end point needs shop id
-  static const String vouchers = '$baseUrl/api/v1/voucher/list/';
+  ///vouchers: logged in users vouchers
+  static const String mineVouchers = '$baseUrl/api/v1/voucher/mine';
+  static const String archivedVouchers = '$baseUrl/api/v1/voucher/mine/archive';
 
   ///stamp card apis end point:
   // all stamp cards for logged in users
