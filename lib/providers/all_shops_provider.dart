@@ -2,9 +2,9 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:shoplocalclubcard/apis/apis.dart';
-import 'package:shoplocalclubcard/models/shop_model.dart';
+import 'package:shoplocalclubcard/models/all_shops_model.dart';
 
-class ShopProvider with ChangeNotifier {
+class AllShopsProvider with ChangeNotifier {
   List<Location> _locations = [];
 
   List<Location> get locations => _locations;
@@ -19,7 +19,7 @@ class ShopProvider with ChangeNotifier {
     if (index != -1) {
       _locations[index] = updatedLocation;
       log('Location updated: ${updatedLocation.id}');
-      notifyListeners(); // Notify that specific location has changed
+      notifyListeners();
     }
   }
 

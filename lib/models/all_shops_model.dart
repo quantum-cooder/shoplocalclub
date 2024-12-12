@@ -1,23 +1,23 @@
-class ShopModel {
+class AllShopModel {
   bool? result;
   ShopData? data;
   String? message;
   List<dynamic>? errors;
 
   // Singleton instance
-  static ShopModel? _shopModel;
+  static AllShopModel? _shopModel;
 
-  ShopModel({this.result, this.data, this.message, this.errors});
+  AllShopModel({this.result, this.data, this.message, this.errors});
 
   // Getter to access the instance globally
-  static ShopModel? get instance => _shopModel;
+  static AllShopModel? get instance => _shopModel;
 
   // Check if data is already loaded
   static bool get hasData => _shopModel != null;
 
   // Factory method to parse JSON and set the singleton instance
-  factory ShopModel.fromJson(Map<String, dynamic> json) {
-    _shopModel = ShopModel(
+  factory AllShopModel.fromJson(Map<String, dynamic> json) {
+    _shopModel = AllShopModel(
       result: json['result'],
       data: json['data'] != null ? ShopData.fromJson(json['data']) : null,
       message: json['message'],

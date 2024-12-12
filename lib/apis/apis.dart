@@ -6,6 +6,6 @@ export 'categories_api.dart';
 export 'check_in_out_api.dart';
 export 'location_api.dart';
 export 'profile_api.dart';
-export 'shop_api.dart';
+export 'shops_api.dart';
 export 'stamp_card_api.dart';
 export 'vouchers_api.dart';

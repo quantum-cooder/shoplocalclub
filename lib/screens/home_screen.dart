@@ -6,9 +6,9 @@ import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
 import 'package:shoplocalclubcard/apis/apis.dart';
 import 'package:shoplocalclubcard/constants/constants.dart';
+import 'package:shoplocalclubcard/models/all_shops_model.dart';
 import 'package:shoplocalclubcard/models/categories_model.dart' as ca;
 import 'package:shoplocalclubcard/models/models.dart';
-import 'package:shoplocalclubcard/models/shop_model.dart';
 import 'package:shoplocalclubcard/providers/providers.dart';
 import 'package:shoplocalclubcard/utils/utils.dart';
 import 'package:shoplocalclubcard/widgets/widgets.dart';
@@ -27,14 +27,14 @@ class HomeScreenState extends State<HomeScreen> {
   late Future<void> fetchData;
   List<Location> locations = [];
   List<ca.Category>? categories;
-  late ShopProvider shopProvider;
+  late AllShopsProvider shopProvider;
   late String? token;
 
   @override
   void initState() {
     super.initState();
     locations.clear();
-    shopProvider = Provider.of<ShopProvider>(context, listen: false);
+    shopProvider = Provider.of<AllShopsProvider>(context, listen: false);
 
     _searchController = TextEditingController();
     fetchData = _fetchAllData();
@@ -57,9 +57,9 @@ class HomeScreenState extends State<HomeScreen> {
 
       categories = CategoriesModel.instance?.data?.categories;
 
-      if (ShopModel.instance != null && ShopModel.instance!.result!) {
-        locations = ShopModel.instance!.data?.locations ?? [];
-        shopProvider.setLocations(ShopModel.instance!.data?.locations ?? []);
+      if (AllShopModel.instance != null && AllShopModel.instance!.result!) {
+        locations = AllShopModel.instance!.data?.locations ?? [];
+        shopProvider.setLocations(AllShopModel.instance!.data?.locations ?? []);
       }
     } catch (e) {
       log('Error fetching _fetchAllData : $e');
@@ -199,7 +199,7 @@ class HomeScreenState extends State<HomeScreen> {
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
                       itemBuilder: (context, index) {
-                        return Consumer<ShopProvider>(
+                        return Consumer<AllShopsProvider>(
                           builder: (context, provider, child) {
                             final location = provider.locations[index];
                             return ShopCustomWidget(
@@ -209,7 +209,8 @@ class HomeScreenState extends State<HomeScreen> {
                               distance:
                                   location.distanceKm?.toStringAsFixed(2) ?? '',
                               address: location.address ?? '',
-                              isFavorite: location.isFavorite != null,
+                              isFavorite:
+                                  location.isFavorite != null ? true : false,
                               isCheckIn: location.isCheckedIn!,
                               activePoints:
                                   location.activePoints?.toString() ?? "0",

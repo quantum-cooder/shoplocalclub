@@ -41,11 +41,11 @@ class _StampCardsScreenState extends State<StampCardsScreen> {
   }
 
   Future<void> _fetchAndSetStampCards({required bool isArchived}) async {
-    _isLoading.value = true; // Show progress indicator
+    _isLoading.value = true;
     final response =
         await StampCardApi.getUsersStampCards(isArchived: isArchived);
     provider.setStampCards(response);
-    _isLoading.value = false; // Hide progress indicator
+    _isLoading.value = false;
   }
 
   void _onFilterChanged() async {

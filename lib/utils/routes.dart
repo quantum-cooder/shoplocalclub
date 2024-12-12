@@ -35,7 +35,7 @@ Route onGenerateRoute(RouteSettings settings) {
   } else if (settings.name == AppRoutes.shopProcessing) {
     return animatePage(const ShopProcessingScreen());
   } else if (settings.name == AppRoutes.favorties) {
-    return animatePage(const FavortiesScreen());
+    return animatePage(const FavoritesScreen());
   } else if (settings.name == AppRoutes.notifications) {
     return animatePage(const NotificationScreen());
   } else if (settings.name == AppRoutes.profile) {

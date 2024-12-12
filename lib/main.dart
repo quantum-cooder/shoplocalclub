@@ -26,9 +26,10 @@ class ShopLocalClub extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (context) => ShopProvider()),
+        ChangeNotifierProvider(create: (context) => AllShopsProvider()),
         ChangeNotifierProvider(create: (context) => StampCardProvider()),
         ChangeNotifierProvider(create: (context) => VoucherProvider()),
+        ChangeNotifierProvider(create: (context) => FavoriteShopsProvider()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

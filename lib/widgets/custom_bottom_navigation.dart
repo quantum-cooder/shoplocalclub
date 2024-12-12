@@ -58,7 +58,7 @@ class CustomBottomNavigation extends StatelessWidget {
       const HomeScreen(),
       const StampCardsScreen(),
       const VouchersScreen(),
-      const FavortiesScreen(),
+      const FavoritesScreen(),
       const ShopProcessingScreen(),
       const ProfileScreen(),
     ];
