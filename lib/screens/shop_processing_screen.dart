@@ -1,140 +1,148 @@
-import 'package:flutter/cupertino.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:provider/provider.dart';
+import 'package:shoplocalclubcard/apis/shop_processing_api.dart';
 import 'package:shoplocalclubcard/constants/constants.dart';
+import 'package:shoplocalclubcard/models/shop_processing_model.dart';
+import 'package:shoplocalclubcard/providers/shop_processing_provider.dart';
 import 'package:shoplocalclubcard/widgets/widgets.dart';
 
-class ShopProcessingScreen extends StatelessWidget {
+class ShopProcessingScreen extends StatefulWidget {
   const ShopProcessingScreen({super.key});
-  static late Size size;
-  static String selectedValue = '1';
-  static DropdownMenuItem<dynamic> item1 = DropdownMenuItem(
-      value: '1', child: customBodyText('Coffee Shop - Sample'));
-  static DropdownMenuItem<dynamic> item2 =
-      DropdownMenuItem(value: '2', child: customBodyText('Coffee Shop - Beta'));
-  static DropdownMenuItem<dynamic> item3 =
-      DropdownMenuItem(value: '3', child: customBodyText('Stable'));
-  static DropdownMenuItem<dynamic> item4 =
-      DropdownMenuItem(value: '4', child: customBodyText('Deployed'));
-  static List<DropdownMenuItem<dynamic>>? itemsList = [
-    item1,
-    item2,
-    item3,
-    item4
-  ];
 
-  static ValueNotifier<String> newValurNotifier = ValueNotifier(selectedValue);
-  final imgUrl =
-      'https://images.pexels.com/photos/26146666/pexels-photo-26146666/free-photo-of-a-small-bird-is-standing-on-the-ground.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2';
+  @override
+  State<ShopProcessingScreen> createState() => _ShopProcessingScreenState();
+}
+
+class _ShopProcessingScreenState extends State<ShopProcessingScreen> {
+  late Future<ShopProcessingModel?> _futureShops;
+
+  @override
+  void initState() {
+    super.initState();
+    _futureShops = _loadShops();
+  }
+
+  Future<ShopProcessingModel?> _loadShops() async {
+    final response = await ShopProcessingApi.getShopsOperatedByUser();
+    if (response != null) {
+      // Update provider only after data is fetched
+      Provider.of<ShopProcessingProvider>(context, listen: false)
+          .updateShops(response);
+    }
+    return response;
+  }
+
   @override
   Widget build(BuildContext context) {
-    size = MediaQuery.of(context).size;
-    final height = size.height;
     return Scaffold(
-      appBar: const CustomAppBar(
-        title: 'Shop Processing',
-        isLeadingNeeded: false,
-        // actionOnPressed: () =>
-        //     Navigator.pushNamed(context, AppRoutes.favorties),
+      appBar: AppBar(
+        title: const Text("Shop Processing"),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Gap(15),
-              customBodyText('Shop Selection'),
-              Card(
-                elevation: 4,
-                child: Container(
-                  width: double.infinity,
-                  height: height > 850 ? height * 0.2 : height * 0.25,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 5,
-                  ),
-                  decoration: ShapeDecoration(
-                    color: AppColors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
+      body: FutureBuilder<ShopProcessingModel?>(
+        future: _futureShops,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator.adaptive());
+          }
+
+          if (snapshot.hasError || snapshot.data == null) {
+            return const Center(child: Text("Error loading shops."));
+          }
+
+          return Consumer<ShopProcessingProvider>(
+            builder: (context, provider, _) {
+              final shops = provider.shopProcessingModel?.data?.shops ?? [];
+              final selectedShop = provider.selectedShop;
+
+              if (shops.isEmpty) {
+                return const Center(child: Text("No shops available."));
+              }
+
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Gap(10),
+                    const CustomText(
+                      title:
+                          "Processing screen allows you to process stamp cards and vouchers for your shop. Please start by selecting a store and selecting a location you wish to administrate.",
                     ),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      ValueListenableBuilder(
-                        valueListenable: newValurNotifier,
-                        builder: (context, value, child) =>
-                            DropdownButtonHideUnderline(
-                          child: DropdownButton(
-                            value: newValurNotifier.value,
-                            items: itemsList,
-                            icon: const Icon(
-                              Icons.keyboard_arrow_down_sharp,
-                              size: 30,
+                    const Gap(10),
+
+                    // Dropdown for selecting a shop
+                    DropdownButton<ShopProcessingShop>(
+                      value: selectedShop,
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      isExpanded: true,
+                      onChanged: (shop) {
+                        if (shop != null) {
+                          Future.delayed(const Duration(milliseconds: 300), () {
+                            provider.updateSelectedShop(shop);
+                          });
+                        }
+                      },
+                      items: shops.map((shop) {
+                        return DropdownMenuItem<ShopProcessingShop>(
+                          value: shop,
+                          child: Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 8.0),
+                            child: CustomText(
+                              title: shop.name,
+                              color: Colors.black,
+                              fontSize: AppFontSize.medium,
+                              fontWeight: FontWeight.w600,
                             ),
-                            padding: EdgeInsets.zero,
-                            onChanged: (newValue) {
-                              newValurNotifier.value = newValue;
-                            },
+                          ),
+                        );
+                      }).toList(),
+                    ),
+
+                    // Shop image
+                    if (selectedShop?.logoFullUrl != null) ...[
+                      const Gap(10),
+                      Center(
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(15),
+                          child: CachedNetworkImage(
+                            imageUrl: selectedShop!.logoFullUrl,
+                            height: 150,
+                            width: double.infinity,
+                            fit: BoxFit.fill,
+                            placeholder: (context, url) => Center(
+                                child: CircularProgressIndicator.adaptive()),
+                            errorWidget: (context, url, error) =>
+                                Icon(Icons.error_outline),
                           ),
                         ),
                       ),
-                      Divider(
-                        color: AppColors.grey.withOpacity(0.5),
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(5),
-                            child: Image.network(
-                              imgUrl,
-                              width: 115,
-                              height: 95,
-                              alignment: Alignment.center,
-                              fit: BoxFit.cover,
-                              loadingBuilder:
-                                  (context, child, loadingProgress) {
-                                if (loadingProgress == null) {
-                                  return child;
-                                } else {
-                                  return const CupertinoActivityIndicator();
-                                }
-                              },
-                              errorBuilder: (context, error, stackTrace) =>
-                                  const Icon(Icons.error_outline_sharp),
-                            ),
-                          ),
-                          const Gap(10),
-                          const Expanded(
-                            child: CustomText(
-                              title: 'New Jersy Shop',
-                              color: AppColors.grey,
-                              fontSize: AppFontSize.medium,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                        ],
-                      ),
+                      const Gap(10),
                     ],
-                  ),
+                    const Gap(10),
+
+                    customBodyText('Shop Locations'),
+                    const Gap(10),
+                    Expanded(
+                      child: ListView.builder(
+                        itemCount: selectedShop?.locations.length ?? 0,
+                        itemBuilder: (context, index) {
+                          final location = selectedShop!.locations[index];
+                          return _buildTile(
+                            title: location.name,
+                            description: location.address,
+                          );
+                        },
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-              const Gap(10),
-              customBodyText('Shop Locations'),
-              const Gap(10),
-              _buildTile(title: 'Marple', description: 'Marple,Sk6 6BD'),
-              const Gap(10),
-              _buildTile(title: 'Warrington', description: 'Marple,Sk6 6BD'),
-              const Gap(10),
-              _buildTile(title: 'Oswestry', description: 'Marple,Sk6 6BD'),
-              const Gap(10),
-              _buildTile(title: 'Chester', description: 'Marple,Sk6 6BD'),
-            ],
-          ),
-        ),
+              );
+            },
+          );
+        },
       ),
     );
   }
@@ -147,30 +155,23 @@ class ShopProcessingScreen extends StatelessWidget {
       color: AppColors.white,
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(
-          vertical: 5,
           horizontal: 20,
         ),
-        leading: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: customBodyText(title),
-            ),
-            Expanded(
-              child: CustomText(
-                title: description,
-                color: AppColors.grey,
-                fontSize: AppFontSize.xsmall,
-                fontWeight: FontWeight.w400,
-              ),
-            ),
-          ],
+        title: customBodyText(title),
+        subtitle: CustomText(
+          title: description,
+          color: AppColors.grey,
+          fontSize: AppFontSize.xsmall,
+          fontWeight: FontWeight.w400,
         ),
-        trailing: const CustomText(
-          title: 'OPERATE',
-          color: AppColors.primary,
-          fontSize: AppFontSize.medium,
-          fontWeight: FontWeight.w600,
+        trailing: InkWell(
+          onTap: () => Navigator.pushNamed(context, AppRoutes.operateLocation),
+          child: const CustomText(
+            title: 'OPERATE',
+            color: AppColors.primary,
+            fontSize: AppFontSize.medium,
+            fontWeight: FontWeight.w600,
+          ),
         ),
       ),
     );

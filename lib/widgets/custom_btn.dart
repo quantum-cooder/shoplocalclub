@@ -14,6 +14,7 @@ class CustomBtn extends StatelessWidget {
     this.fontWeight = FontWeight.w700,
     this.width = double.infinity,
     this.isLoading = false,
+    this.titlePadding = EdgeInsets.zero,
   });
 
   final String btnTitle;
@@ -23,6 +24,7 @@ class CustomBtn extends StatelessWidget {
   final Gradient btnBackgroundColor;
   final double? fontSize, width;
   final bool isLoading;
+  final EdgeInsets titlePadding;
 
   @override
   Widget build(BuildContext context) {
@@ -30,6 +32,7 @@ class CustomBtn extends StatelessWidget {
       onTap: onPressed,
       child: Container(
         alignment: Alignment.center,
+        padding: titlePadding,
         width: width,
         height: 45,
         decoration: BoxDecoration(

@@ -8,7 +8,7 @@ class CustomTextField extends StatelessWidget {
     required this.controller,
     this.inputFormatters,
     this.keyboardType,
-    this.isTabAble = true,
+    this.isTapAble = true,
     this.focusNode,
     this.isObscuredText = false,
     this.onChanged,
@@ -33,7 +33,7 @@ class CustomTextField extends StatelessWidget {
   final TextEditingController controller;
   final List<TextInputFormatter>? inputFormatters;
   final TextInputType? keyboardType;
-  final bool isTabAble, isObscuredText, filled, readOnly;
+  final bool isTapAble, isObscuredText, filled, readOnly;
   final FocusNode? focusNode;
   final Function(String)? onChanged, onFieldSubmitted;
   final TextAlign textAlign;
@@ -53,7 +53,7 @@ class CustomTextField extends StatelessWidget {
       keyboardType: keyboardType,
       controller: controller,
       inputFormatters: inputFormatters,
-      enabled: isTabAble,
+      enabled: isTapAble,
       focusNode: focusNode,
       obscureText: isObscuredText,
       onChanged: onChanged,

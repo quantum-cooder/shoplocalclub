@@ -66,6 +66,11 @@ class ApiEndPoints {
   static const String userStampCards = '$baseUrl/api/v1/stampcard';
   static const String userStampCardsArchived =
       '$baseUrl/api/v1/stampcard/archive';
+
+  ///processing cards OR shop processing //6.4 Get shops that user can operate
+  static const String shopsOperatedByUser = '$baseUrl/api/v1/operator';
+//6.5 Set user as active operator at the location || this need location_id at end of url
+  static const String operateShop = '$baseUrl/api/v1/operator/operate/';
 }
 
 ///https://shoplocalclubcard.com/terms-conditions/

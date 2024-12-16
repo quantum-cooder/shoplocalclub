@@ -1,7 +1,8 @@
+import 'dart:developer';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'dart:developer';
 import 'package:shoplocalclubcard/apis/apis.dart';
 import 'package:shoplocalclubcard/constants/constants.dart';
 import 'package:shoplocalclubcard/models/user_profile_model.dart';
@@ -45,7 +46,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         future: ProfileApi.getprofileData(),
         builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CupertinoActivityIndicator());
+            return const Center(child: CircularProgressIndicator.adaptive());
           } else if (snapshot.hasError) {
             return Center(
               child: customBodyText('Error loading profile data'),

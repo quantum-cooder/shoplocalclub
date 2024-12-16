@@ -16,4 +16,6 @@ class AppRoutes {
   static const String profile = '/profile';
   static const String updateProfile = '/updateProfile';
   static const String cardMemberShip = '/cardMemberShip';
+  static const String operateLocation = '/operateLocation';
+  static const String qrCodeScanCamera = '/qrCodeScanCamera';
 }

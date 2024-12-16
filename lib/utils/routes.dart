@@ -42,6 +42,10 @@ Route onGenerateRoute(RouteSettings settings) {
     return animatePage(const ProfileScreen());
   } else if (settings.name == AppRoutes.updateProfile) {
     return animatePage(const UpdateUserProfile());
+  } else if (settings.name == AppRoutes.operateLocation) {
+    return animatePage(const OperateLocationScreen());
+  } else if (settings.name == AppRoutes.qrCodeScanCamera) {
+    return animatePage(const QrcodeScanCameraScreen());
   } else if (settings.name == AppRoutes.cardMemberShip) {
     final name = settings.arguments as String;
     return animatePage(CardMemberShipScreen(

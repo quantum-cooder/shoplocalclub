@@ -30,6 +30,8 @@ class ShopLocalClub extends StatelessWidget {
         ChangeNotifierProvider(create: (context) => StampCardProvider()),
         ChangeNotifierProvider(create: (context) => VoucherProvider()),
         ChangeNotifierProvider(create: (context) => FavoriteShopsProvider()),
+        ChangeNotifierProvider(create: (context) => ShopProcessingProvider()),
+        ChangeNotifierProvider(create: (context) => StampCardNumberProvider()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
