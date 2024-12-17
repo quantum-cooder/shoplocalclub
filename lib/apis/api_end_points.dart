@@ -49,8 +49,22 @@ class ApiEndPoints {
   ///shops nearby you
   static const String nearByShops = '$baseUrl/api/v1/location/nearby';
 
-  ///add and remove a shop from favourites: this end point requires /{shop} or shop id at end
+  // Retrieve details of a specific location, it needs shop location id at end of url
+  static const String getSpecificShop = '$baseUrl/api/v1/location/show/';
 
+  ///### 5.5 Get Clients Check-Ins
+
+// Retrieve check-ins for clients at a specific location.
+
+// **POST** `/api/v1/location/clients_check_ins/{location_id}`
+  static const String hasCheckedInSpecificShop =
+      '$baseUrl/api/v1/location/clients_check_ins/';
+
+////operate user profile data
+  static const String specificShopOperatorUserData =
+      '$baseUrl/api/v1/member/user';
+
+  ///add and remove a shop from favourites: this end point requires /{shop} or shop id at end
   static const String addShopToFavourite = '$baseUrl/api/v1/favorite/store/';
 
   ///shop id at end only

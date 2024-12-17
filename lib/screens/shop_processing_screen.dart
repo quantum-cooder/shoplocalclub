@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
@@ -5,7 +7,8 @@ import 'package:provider/provider.dart';
 import 'package:shoplocalclubcard/apis/shop_processing_api.dart';
 import 'package:shoplocalclubcard/constants/constants.dart';
 import 'package:shoplocalclubcard/models/shop_processing_model.dart';
-import 'package:shoplocalclubcard/providers/shop_processing_provider.dart';
+import 'package:shoplocalclubcard/providers/providers.dart';
+import 'package:shoplocalclubcard/utils/show_toast.dart';
 import 'package:shoplocalclubcard/widgets/widgets.dart';
 
 class ShopProcessingScreen extends StatefulWidget {
@@ -17,19 +20,19 @@ class ShopProcessingScreen extends StatefulWidget {
 
 class _ShopProcessingScreenState extends State<ShopProcessingScreen> {
   late Future<ShopProcessingModel?> _futureShops;
+  late ShopProcessingProvider provider;
 
   @override
   void initState() {
     super.initState();
+    provider = Provider.of<ShopProcessingProvider>(context, listen: false);
     _futureShops = _loadShops();
   }
 
   Future<ShopProcessingModel?> _loadShops() async {
     final response = await ShopProcessingApi.getShopsOperatedByUser();
     if (response != null) {
-      // Update provider only after data is fetched
-      Provider.of<ShopProcessingProvider>(context, listen: false)
-          .updateShops(response);
+      provider.updateShops(response);
     }
     return response;
   }
@@ -133,6 +136,7 @@ class _ShopProcessingScreenState extends State<ShopProcessingScreen> {
                           return _buildTile(
                             title: location.name,
                             description: location.address,
+                            shopLocationId: selectedShop.locations[index].id,
                           );
                         },
                       ),
@@ -150,6 +154,7 @@ class _ShopProcessingScreenState extends State<ShopProcessingScreen> {
   _buildTile({
     required String title,
     required String description,
+    required int? shopLocationId,
   }) {
     return Card(
       color: AppColors.white,
@@ -165,7 +170,21 @@ class _ShopProcessingScreenState extends State<ShopProcessingScreen> {
           fontWeight: FontWeight.w400,
         ),
         trailing: InkWell(
-          onTap: () => Navigator.pushNamed(context, AppRoutes.operateLocation),
+          onTap: () async {
+            showToast(toastMsg: "Checking your permission");
+            final canOperate =
+                await ShopProcessingApi.operateShop(shopLocationId!);
+            log("canOperate $canOperate for location id $shopLocationId");
+            if (canOperate) {
+              Navigator.pushNamed(
+                context,
+                AppRoutes.membershipCardScreen,
+                arguments: shopLocationId,
+              );
+            } else {
+              showToast(toastMsg: "You don't have permission to operate");
+            }
+          },
           child: const CustomText(
             title: 'OPERATE',
             color: AppColors.primary,

@@ -4,10 +4,22 @@ import 'package:flutter/material.dart';
 import 'package:google_mlkit_barcode_scanning/google_mlkit_barcode_scanning.dart';
 import 'package:image_picker/image_picker.dart';
 
-class StampCardNumberProvider extends ChangeNotifier {
+class QrCodeScanningProvider extends ChangeNotifier {
   String _cardNumber = '';
 
   String get cardNumber => _cardNumber;
+
+  /// Manually update card number
+  void updateCardNumber(String newNumber) {
+    _cardNumber = newNumber;
+    notifyListeners();
+  }
+
+  /// Clear card number
+  void clearCardNumber() {
+    _cardNumber = '';
+    notifyListeners();
+  }
 
   /// Pick image and scan QR code
   Future<void> scanQrCodeFromGallery() async {

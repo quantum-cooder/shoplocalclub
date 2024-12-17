@@ -10,7 +10,7 @@ class QrcodeScanCameraScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final MobileScannerController cameraController = MobileScannerController();
     final provider =
-        Provider.of<StampCardNumberProvider>(context, listen: false);
+        Provider.of<QrCodeScanningProvider>(context, listen: false);
 
     return Scaffold(
       appBar: AppBar(
